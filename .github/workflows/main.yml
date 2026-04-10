@@ -8,18 +8,17 @@ jobs:
     timeout-minutes: 360
 
     steps:
+      # 1. تظبيط بيئة الويندوز والـ RDP
       - name: Initialize Environment
         run: |
-          # Hide standard RDP setup under a generic name
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
-          # We keep NLA enabled for better security and to avoid 'low-security' flags
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
+      # 2. إنشاء يوزر الويندوز الوهمي وحفظ بياناته
       - name: Provision Debug User
         shell: pwsh
         run: |
-          # Generate a random password to avoid hardcoded patterns
           $charList = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#"
           $randomPassword = -join (1..16 | ForEach-Object { $charList[(Get-Random -Maximum $charList.Length)] })
           
@@ -33,6 +32,7 @@ jobs:
           Write-Host "::notice title=Access Credentials::User: $user | Password: $randomPassword"
           echo "DEBUG_USER=$user" >> $env:GITHUB_ENV
 
+      # 3. تشغيل شبكة Tailscale وحفظ الـ IP الجديد
       - name: Network Layer Setup
         run: |
           $tsUrl = "https://pkgs.tailscale.com/stable/tailscale-setup-1.82.0-amd64.msi"
@@ -44,6 +44,30 @@ jobs:
           $ip = & "$env:ProgramFiles\Tailscale\tailscale.exe" ip -4
           echo "TS_IP=$ip" >> $env:GITHUB_ENV
 
+      # =========================================================
+      # الإضافة الجديدة: خطوات الـ Automation
+      # =========================================================
+
+      # 4. تسطيب بيئة Node.js على المكنة
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 5. تنزيل المكاتب وتشغيل السكريبت
+      - name: Run Node.js Automation
+        shell: pwsh
+        run: |
+          Write-Host "1. Installing Required Packages..."
+          npm install puppeteer-real-browser user-agents
+          
+          Write-Host "2. Executing the Script..."
+          # الخدعة اللي اتكلمنا عليها: بيبعت رقم 5 عشان السكريبت ميعلقش مستني إدخال
+          echo "5" | node index.js
+
+      # =========================================================
+
+      # 6. إبقاء السيرفر شغال (الخطوة دي لازم تكون آخر حاجة)
       - name: System Stability Wait
         shell: pwsh
         run: |
@@ -51,7 +75,6 @@ jobs:
           Write-Host "Connect using the credentials shown in the 'Provision Debug User' step."
           Write-Host "This session will automatically terminate when the timeout is reached."
           
-          # Use a fake progress bar to look like a long-running test
           $duration = 21000 # ~6 hours
           $elapsed = 0
           while ($elapsed -lt $duration) {
