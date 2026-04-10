@@ -1,0 +1,10 @@
+{
+  "name": "puppeter-course",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "commonjs",
+  "dependencies": {
+    "puppeteer-real-browser": "^1.4.4",
+    "user-agents": "^1.1.669"
+  }
+}
