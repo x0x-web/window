@@ -45,16 +45,17 @@ jobs:
           echo "TS_IP=$ip" >> $env:GITHUB_ENV
 
       # =========================================================
-      # الإضافة الجديدة: خطوات الـ Automation
-      # =========================================================
+      # 4. دي الخطوة اللي بتسحب ملف index.js بتاعك من جيت هاب للمكنة
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      # 4. تسطيب بيئة Node.js على المكنة
+      # 5. تسطيب بيئة Node.js عشان المكنة تفهم الكود
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 5. تنزيل المكاتب وتشغيل السكريبت
+      # 6. تنزيل المكاتب وتشغيل السكريبت بتاعك
       - name: Run Node.js Automation
         shell: pwsh
         run: |
@@ -62,12 +63,11 @@ jobs:
           npm install puppeteer-real-browser user-agents
           
           Write-Host "2. Executing the Script..."
-          # الخدعة اللي اتكلمنا عليها: بيبعت رقم 5 عشان السكريبت ميعلقش مستني إدخال
+          # الخدعة اللي بتبعت رقم 5 عشان الكود يشتغل
           echo "5" | node index.js
-
       # =========================================================
 
-      # 6. إبقاء السيرفر شغال (الخطوة دي لازم تكون آخر حاجة)
+      # 7. إبقاء السيرفر شغال (الخطوة دي لازم تكون آخر حاجة)
       - name: System Stability Wait
         shell: pwsh
         run: |
