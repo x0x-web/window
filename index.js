@@ -79,7 +79,7 @@ const generateRandomName = (length = 10) => {
 
       await page.goto(
         // "https://commerce.adobe.com/store/checkout?items%5B0%5D%5Bid%5D=85E283FAC074B6FAB117811DAD30FD6B&cli=creative&co=US&lang=en&ss=commitment",
-        "https://commerce.adobe.com/store/confirmation?items%5B0%5D%5Bid%5D=65BA7CA7573834AC4D043B0E7CBD2349&items%5B0%5D%5Bq%5D=1&items%5B1%5D%5Bid%5D=DCB7142784B37C4808BBD2505A79546F&items%5B1%5D%5Bq%5D=1&rrItems%5B0%5D%5Bid%5D=65BA7CA7573834AC4D043B0E7CBD2349&rrItems%5B0%5D%5Bq%5D=1&rrItems%5B1%5D%5Bid%5D=DCB7142784B37C4808BBD2505A79546F&rrItems%5B1%5D%5Bq%5D=1&cli=mini_plans&co=US&lang=en&sdid=2FDNCC3M&mv=search&mv2=paidsearch&ms=COM&ot=TRIAL&cs=INDIVIDUAL&pa=ccsn_direct_individual&af=uc_new_user_iframe%2Cuc_new_system_close&fps=t&srs=t&apc=CCI_50_3_IP_US&ss=checkout",
+        "https://commerce.adobe.com/store/confirmation?items%5B0%5D%5Bid%5D=65BA7CA7573834AC4D043B0E7CBD2349&items%5B0%5D%5Bq%5D=1&items%5B1%5D%5Bid%5D=DCB7142784B37C4808BBD2505A79546F&items%5B1%5D%5Bq%5D=1&items%5B2%5D%5Bid%5D=F5B3D59867BC5B6020EFA0763C3AE92A&items%5B2%5D%5Bq%5D=1&rrItems%5B0%5D%5Bid%5D=65BA7CA7573834AC4D043B0E7CBD2349&rrItems%5B0%5D%5Bq%5D=1&rrItems%5B1%5D%5Bid%5D=DCB7142784B37C4808BBD2505A79546F&rrItems%5B1%5D%5Bq%5D=1&cli=mini_plans&co=US&lang=en&sdid=2FDNCC3M&mv=search&mv2=paidsearch&ms=COM&ot=TRIAL&cs=INDIVIDUAL&pa=ccsn_direct_individual&af=uc_new_user_iframe%2Cuc_new_system_close&fps=t&srs=t&apc=CCI_50_3_IP_US&ss=checkout",
         { waitUntil: "networkidle2" },
       );
       await new Promise((r) => setTimeout(r, 2000));
@@ -132,7 +132,7 @@ const generateRandomName = (length = 10) => {
           [...document.querySelectorAll("h4")].some((e) =>
             e.textContent.includes("Order Number"),
           ),
-        { timeout: 45000 },
+        { timeout: 28000 },
       );
 
       console.log(`🎉 SUCCESS! Account [${i}] Activated: ${newEmail}`);
@@ -220,7 +220,7 @@ const generateRandomName = (length = 10) => {
             [...document.querySelectorAll("h4")].some((e) =>
               e.textContent.includes("Order Number"),
             ),
-          { timeout: 30000 },
+          { timeout: 28000 },
         );
 
         console.log(`🎉 SUCCESS! Retry Account [${i}] Activated: ${retryEmail}`);
