@@ -93,7 +93,7 @@ const generateRandomName = (length = 10) => {
         delay: Math.floor(Math.random() * (100 - 30 + 1)) + 30,
       });
       await new Promise((r) => setTimeout(r, 2000));
-      await page.click("button[data-testid='action-container-cta']");
+      await page.click("button[data-testid='action-container-cta-wizard-step-inline']");
 
       await new Promise((r) => setTimeout(r, 4000));
 
@@ -121,10 +121,10 @@ const generateRandomName = (length = 10) => {
 
       await new Promise((r) => setTimeout(r, 4000));
       await page.evaluate(() => {
-        const buttons = document.querySelectorAll(
-          "button[data-testid='action-container-cta']",
-        );
-        if (buttons[1]) buttons[1].click();
+        const buttons = document.querySelector(
+            "button[data-daa-ll='Agree and subscribe']",
+          );
+          if (buttons) buttons.click();
       });
 
       await page.waitForFunction(
