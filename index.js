@@ -35,6 +35,7 @@ const generateRandomName = (length = 10) => {
 
   for (let i = 1; i <= totalAccounts; i++) {
     const randomName = generateRandomName(12);
+    // const newEmail = `${randomName}@${MY_DOMAIN}`;
     const newEmail = `${randomName}@${MY_DOMAIN}`;
 
     // [تعديل 2] توليد أبعاد شاشة عشوائية لتبدو طبيعية (بين 1366x768 و 1920x1080)
@@ -122,9 +123,9 @@ const generateRandomName = (length = 10) => {
       await new Promise((r) => setTimeout(r, 4000));
       await page.evaluate(() => {
         const buttons = document.querySelector(
-            "button[data-daa-ll='Agree and subscribe']",
-          );
-          if (buttons) buttons.click();
+          "button[data-daa-ll='Agree and subscribe']",
+        );
+        if (buttons) buttons.click();
       });
 
       await page.waitForFunction(
@@ -132,7 +133,7 @@ const generateRandomName = (length = 10) => {
           [...document.querySelectorAll("h4")].some((e) =>
             e.textContent.includes("Order Number"),
           ),
-        { timeout: 28000 },
+        { timeout: 30000 },
       );
 
       console.log(`🎉 SUCCESS! Account [${i}] Activated: ${newEmail}`);
@@ -155,79 +156,47 @@ const generateRandomName = (length = 10) => {
         ],
       });
 
-      const retryPage = await retryBrowser.page;
+  
       try {
-        const retryRandomName = generateRandomName(12);
-        const retryEmail = `${retryRandomName}@${MY_DOMAIN}`;
-
-        await retryPage.setViewport({ width: randomWidth, height: randomHeight });
-        await retryPage.setUserAgent(userAgent.toString());
-
-        await retryPage.evaluateOnNewDocument(() => {
-          Object.defineProperty(navigator, "webdriver", { get: () => false });
-          Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
-          Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3] });
-        });
-
-        await retryPage.goto(
-          "https://commerce.adobe.com/store/confirmation?items%5B0%5D%5Bid%5D=65BA7CA7573834AC4D043B0E7CBD2349&items%5B0%5D%5Bq%5D=1&items%5B1%5D%5Bid%5D=DCB7142784B37C4808BBD2505A79546F&items%5B1%5D%5Bq%5D=1&rrItems%5B0%5D%5Bid%5D=65BA7CA7573834AC4D043B0E7CBD2349&rrItems%5B0%5D%5Bq%5D=1&rrItems%5B1%5D%5Bid%5D=DCB7142784B37C4808BBD2505A79546F&rrItems%5B1%5D%5Bq%5D=1&cli=mini_plans&co=US&lang=en&sdid=2FDNCC3M&mv=search&mv2=paidsearch&ms=COM&ot=TRIAL&cs=INDIVIDUAL&pa=ccsn_direct_individual&af=uc_new_user_iframe%2Cuc_new_system_close&fps=t&srs=t&apc=CCI_50_3_IP_US&ss=checkout",
-          { waitUntil: "networkidle2" },
-        );
-
-        await retryPage.waitForSelector("input[id='email-input-field']", {
-          timeout: 12000,
-        });
-
-        await retryPage.type("input[id='email-input-field']", retryEmail, {
-          delay: Math.floor(Math.random() * (100 - 30 + 1)) + 30,
-        });
-        await new Promise((r) => setTimeout(r, 2000));
-        await retryPage.click("button[data-testid='action-container-cta-wizard-step-inline']");
-
-        await new Promise((r) => setTimeout(r, 4000));
-
-        const retryFrames = retryPage.frames();
-        let retryPaymentFrame = null;
-        for (const frame of retryFrames) {
-          const hasCardInput = await frame
-            .$("input[id='card-number']")
-            .catch(() => null);
-          if (hasCardInput) {
-            retryPaymentFrame = frame;
-            break;
-          }
+       
+       
+let paymentFrame = null;
+      for (const frame of frames) {
+        const hasCardInput = await frame
+          .$("input[id='card-number']")
+          .catch(() => null);
+        if (hasCardInput) {
+          paymentFrame = frame;
+          break;
         }
+      }
 
-        if (!retryPaymentFrame) throw new Error("Retry iFrame Not Found!");
+        await paymentFrame.type("input[id='card-number']", "4217836005687031", { delay: 50 });
+        await paymentFrame.type("input[id='expiry-date']", "09/27", { delay: 50 });
 
-        await retryPaymentFrame.type("input[id='card-number']", "4217836005687031", { delay: 50 });
-        await retryPaymentFrame.type("input[id='expiry-date']", "09/27", { delay: 50 });
-
-        await retryPage.type("input[id='firstName']", generateRandomName(6), { delay: 50 });
-        await retryPage.type("input[id='lastName']", generateRandomName(6), { delay: 50 });
-        await retryPage.type("input[id='postalCode']", "10001", { delay: 50 });
+        await page.type("input[id='postalCode']", "10001", { delay: 50 });
 
         await new Promise((r) => setTimeout(r, 4000));
-        await retryPage.evaluate(() => {
+        await page.evaluate(() => {
           const buttons = document.querySelector(
             "button[data-daa-ll='Agree and subscribe']",
           );
           if (buttons) buttons.click();
         });
 
-        await retryPage.waitForFunction(
+        await page.waitForFunction(
           () =>
             [...document.querySelectorAll("h4")].some((e) =>
               e.textContent.includes("Order Number"),
             ),
-          { timeout: 28000 },
+          { timeout: 30000 },
         );
 
         console.log(`🎉 SUCCESS! Retry Account [${i}] Activated: ${retryEmail}`);
         fs.appendFileSync("activated_accounts.txt", retryEmail + "\n", "utf8");
       } catch (retryError) {
         console.log(`❌ Retry Account [${i}] FAILED: ${retryError.message}`);
-        await retryPage.screenshot({ path: `retry_error_${i}.png` });
+        await page.screenshot({ path: `retry_error_${i}.png` });
       } finally {
         await retryBrowser.browser.close();
       }
