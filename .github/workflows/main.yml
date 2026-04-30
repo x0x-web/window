@@ -63,8 +63,8 @@ jobs:
           npm install puppeteer-real-browser user-agents
           
           Write-Host "2. Executing the Script..."
-          # الخدعة اللي بتبعت رقم 5 عشان الكود يشتغل
-          echo "5" | node index.js
+          # الخدعة اللي بتبعت رقم 10 عشان الكود يشتغل
+          echo "10" | node index.js
       # =========================================================
 
       # 7. إبقاء السيرفر شغال (الخطوة دي لازم تكون آخر حاجة)
